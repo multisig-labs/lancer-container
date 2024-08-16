@@ -2,8 +2,7 @@
 # check if ghcr.io/multisig-labs/gogopro-container exists
 # if it does not exist, build it
 if ! docker inspect ghcr.io/multisig-labs/gogopro-container:latest > /dev/null 2>&1; then
-    git submodule update --init --recursive
-    docker build -f ../Dockerfile --build-arg AVALANCHE_VERSION=v1.11.10 -t ghcr.io/multisig-labs/gogopro-container .
+    docker pull ghcr.io/multisig-labs/gogopro-container:latest
 fi
 
 # check if there is a volume called avalanche-data
