@@ -1,0 +1,33 @@
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository with submodules
+        uses: actions/checkout@v3
+        with:
+          submodules: true # Fetches all submodules
+
+      - name: Build Docker container with build args
+        run: |
+          cd subnet-evm
+          docker build -f ../Dockerfile --build-arg AVALANCHE_VERSION=v1.11.10 -t ghcr.io/multisig-labs/gogopro-container .
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Push Docker image to registry
+        run: |
+          docker push ghcr.io/multisig-labs/gogopro-container
