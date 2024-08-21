@@ -11,3 +11,6 @@ migrate:
   cd api
   go run cmd/populate/main.go
   cd ..
+
+run-watchdog:
+  deno run --allow-env --allow-net watchdog/main.ts
