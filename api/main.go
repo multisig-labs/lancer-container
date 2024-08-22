@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 	"os"
 
@@ -13,8 +12,6 @@ import (
 func main() {
 	// Get the DATABASE_URI environment variable
 	databaseURI := os.Getenv("DATABASE_URI")
-
-	fmt.Println("DATABASE_URI:", databaseURI)
 
 	// Initialize the database
 	database, err := db.New(databaseURI)

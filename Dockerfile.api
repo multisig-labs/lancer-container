@@ -1,0 +1,41 @@
+# Use the official Golang image based on Alpine to build the Go application
+FROM golang:1.22-alpine AS build
+
+# Create and set the working directory inside the container
+WORKDIR /app
+
+# Install git (necessary for fetching dependencies if any private repos are used)
+RUN apk add --no-cache git
+
+# Copy the Go module files to the working directory
+COPY api/go.mod api/go.sum ./
+
+# Download and cache the dependencies
+RUN go mod download
+
+# Copy the source code to the working directory
+COPY api/ ./
+
+# Build the Go application
+RUN go build -o main .
+
+# Use a smaller Alpine image to run the Go application
+FROM alpine:latest
+
+# Create a non-root user and group to run the application for better security
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+
+# Set the working directory inside the container
+WORKDIR /app
+
+# Copy the built executable from the build stage
+COPY --from=build /app/main ./
+
+# Set the user to the non-root user
+USER appuser
+
+# Expose the port your application runs on (configure as needed)
+EXPOSE 8080
+
+# Command to run the executable
+CMD ["./main"]
