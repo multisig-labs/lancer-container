@@ -4,33 +4,25 @@ version: '3.9'
 
 services:
   # Service for the first Dockerfile
-  # avalanche:
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile
-  #     args:
-  #       AVALANCHE_VERSION: latest  # Update with the appropriate version
-  #       SUBNET_EVM_COMMIT: "commit_hash"  # Replace with the actual commit hash if any
-  #       CURRENT_BRANCH: "branch_name"  # Replace with the actual branch name if any
-  #   container_name: avalanche_service
-
-  # Service for the API
-  api:
+  avalanche:
     build:
       context: .
-      dockerfile: Dockerfile.api
-    container_name: api_service
+      dockerfile: Dockerfile
+      args:
+        AVALANCHE_VERSION: latest  # Update with the appropriate version
+        SUBNET_EVM_COMMIT: "commit_hash"  # Replace with the actual commit hash if any
+        CURRENT_BRANCH: "branch_name"  # Replace with the actual branch name if any
     ports:
-      - "8080:8080"
-    depends_on:
-      - watchdog
+      - "127.0.0.1:9650:9650"
+      - "9651:9651"
+    volumes:
+      - ./avalanche:/root/.avalanchego
 
   # Service for the watchdog
   watchdog:
     build:
       context: .
       dockerfile: Dockerfile.watchdog
-    container_name: watchdog_service
 
 networks:
   default:

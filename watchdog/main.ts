@@ -1,13 +1,28 @@
+import { Database } from './types.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.1?target=deno';
-
+import Docker from "https://deno.land/x/docker_deno@v0.3.3/mod.ts"
 const supabaseUrl = Deno.env.get('SUPABASE_URL');
 const serviceKey = Deno.env.get('SUPABASE_SERVICE_KEY');
+
+const docker = new Docker("/var/run/docker.sock");
+
+type Config = {
+  "track-subnets": string;
+}
 
 if (!supabaseUrl || !serviceKey) {
   throw new Error('Please provide SUPABASE_URL and SUPABASE_SERVICE_KEY');
 }
 
-const supabase = createClient(supabaseUrl, serviceKey);
+const supabase = createClient<Database>(supabaseUrl, serviceKey);
+
+const getAllSubnets = async () => {
+  const { data, error } = await supabase.from('subnets').select('*');
+  if (error) {
+    throw error;
+  }
+  return data;
+}
 
 const changes = supabase
   .channel('table-db-changes')
@@ -15,8 +30,23 @@ const changes = supabase
     event: 'INSERT',
     schema: 'public',
     table: 'subnets',
-  }, (payload) => {
-    console.log('Change received:', payload);
+  }, async (_) => {
+    const subnets = await getAllSubnets();
+    const config = {
+      'track-subnets': subnets.map((subnet) => subnet.subnet_id).join(',')
+    } as Config;
+
+    // overwrite the config at avalanche/config.json
+    const encoder = new TextEncoder();
+    await Deno.writeFile('./avalanche/config.json', encoder.encode(JSON.stringify(config)));
+    // list all containers
+    const containers = await docker.containers.list();
+    // find the container id with the name "avalanche"
+    const container = containers.find((container) => container?.Names?.includes('/avalanche'));
+    if (container) {
+      // restart the container
+      await docker.containers.restart(container.Id!);
+    }
   });
 
 changes.subscribe((status) => {
