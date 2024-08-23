@@ -9,7 +9,7 @@ on:
       - main
 
 jobs:
-  build:
+  build-avalanche:
     runs-on: ubuntu-latest
 
     steps:
@@ -21,7 +21,7 @@ jobs:
       - name: Build Docker container with build args
         run: |
           cd subnet-evm
-          docker build -f ../Dockerfile --build-arg AVALANCHE_VERSION=v1.11.10 -t ghcr.io/multisig-labs/gogopro-container .
+          docker build -f ../Dockerfile --build-arg AVALANCHE_VERSION=v1.11.10 -t ghcr.io/multisig-labs/lancer-avalanchego .
 
       - name: Log in to the Container registry
         uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
@@ -32,4 +32,25 @@ jobs:
 
       - name: Push Docker image to registry
         run: |
-          docker push ghcr.io/multisig-labs/gogopro-container
+          docker push ghcr.io/multisig-labs/lancer-avalanchego
+          
+  build-watchdog:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository with submodules
+        uses: actions/checkout@v3
+      
+      - name: Build container
+        run: docker build -f Dockerfile.watchdog -t ghcr.io/multisig-labs/lancer-watchdog .
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
+        with:
+          registry: ghcr.io
+          username: chand1012
+          password: ${{ secrets.GH_PAT }}
+      
+      - name: Push Docker image to registry
+        run: |
+          docker push ghcr.io/multisig-labs/lancer-watchdog
