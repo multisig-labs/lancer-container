@@ -39,6 +39,19 @@ const changes = supabase
     // overwrite the config at avalanche/config.json
     const encoder = new TextEncoder();
     await Deno.writeFile('./avalanche/config.json', encoder.encode(JSON.stringify(config)));
+    // make sure all the subnet VMs are in the plugins folder
+    // if they are not, copy srEXiWaHuhNyGwPUi444Tu47ZEDwxTWrbQiuD7FmgSAQ6X7Dy to their respective VM ID
+    const vmIDs = subnets.map((subnet) => subnet.vm_id);
+    // list all files in the plugins folder
+    const files = Array.from(Deno.readDirSync('./avalanche/plugins'));
+    for (const vmID of vmIDs) {
+      // check if the file exists
+      const file = files.find((file) => file.name === vmID);
+      if (!file) {
+        // copy the file
+        Deno.copyFile('./avalanche/plugins/srEXiWaHuhNyGwPUi444Tu47ZEDwxTWrbQiuD7FmgSAQ6X7Dy', `./avalanche/plugins/${vmID}`);
+      }
+    }
     // list all containers
     const containers = await docker.containers.list();
     // find the container id with the name "avalanche"
