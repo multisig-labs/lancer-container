@@ -6,8 +6,8 @@ services:
   # Service for the first Dockerfile
   avalanche:
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: subnet-evm
+      dockerfile: ../Dockerfile
       args:
         AVALANCHE_VERSION: latest  # Update with the appropriate version
         SUBNET_EVM_COMMIT: "commit_hash"  # Replace with the actual commit hash if any
