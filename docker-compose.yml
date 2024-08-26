@@ -1,7 +1,5 @@
 name: "lancer-server"
 
-version: '3.9'
-
 services:
   # Service for the first Dockerfile
   avalanche:
@@ -9,20 +7,21 @@ services:
       context: subnet-evm
       dockerfile: ../Dockerfile
       args:
-        AVALANCHE_VERSION: latest  # Update with the appropriate version
-        SUBNET_EVM_COMMIT: "commit_hash"  # Replace with the actual commit hash if any
-        CURRENT_BRANCH: "branch_name"  # Replace with the actual branch name if any
+        AVALANCHE_VERSION: latest # Update with the appropriate version
     ports:
       - "127.0.0.1:9650:9650"
       - "9651:9651"
     volumes:
-      - ./avalanche:/root/.avalanchego
+      - ./avalanche:/avalanche
+    command: /avalanchego/build/avalanchego --data-dir=/avalanche --network-id=fuji --config-file=/avalanche/configs/node.json
 
   # Service for the watchdog
   watchdog:
     build:
       context: .
       dockerfile: Dockerfile.watchdog
+    volumes:
+      - ./avalanche:/avalanche
 
 networks:
   default:

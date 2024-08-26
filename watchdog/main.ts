@@ -8,6 +8,8 @@ const docker = new Docker("/var/run/docker.sock");
 
 type Config = {
   "track-subnets": string;
+  "public-ip": string;
+  "http-host": string;
 }
 
 if (!supabaseUrl || !serviceKey) {
@@ -35,6 +37,18 @@ const changes = supabase
     const config = {
       'track-subnets': subnets.map((subnet) => subnet.subnet_id).join(',')
     } as Config;
+
+    // read the existing config and include all existing attributes
+    try {
+      const decoder = new TextDecoder('utf-8');
+      const data = await Deno.readFile('./avalanche/config.json');
+      const existingConfig: Config = JSON.parse(decoder.decode(data));
+      config['public-ip'] = existingConfig['public-ip'];
+      config['http-host'] = existingConfig['http-host'];
+      Object.assign(config, existingConfig);
+    } catch (_) {
+      // ignore the error if the file does not exist
+    }
 
     // overwrite the config at avalanche/config.json
     const encoder = new TextEncoder();

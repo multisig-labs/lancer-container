@@ -2,3 +2,4 @@ testnet.json
 .env
 api/test.db
 **.DS_Store**
+avalanche
