@@ -1,5 +1,5 @@
-# Use the official Deno image
-FROM denoland/deno:alpine
+# Stage 1: Build the Deno application
+FROM denoland/deno:alpine AS builder
 
 # Set the working directory to /app
 WORKDIR /app
@@ -7,5 +7,8 @@ WORKDIR /app
 # Copy the Deno program to the container
 COPY watchdog /app/watchdog
 
-# Set the startup command to run the Deno program
-CMD ["run", "--allow-net", "--allow-env", "watchdog/main.ts"]
+# cache the dependencies
+RUN deno cache /app/watchdog/main.ts
+
+# run the watchdog
+CMD ["deno", "run", "--allow-net", "--allow-read", "--allow-env", "--allow-write", "/app/watchdog/main.ts"]

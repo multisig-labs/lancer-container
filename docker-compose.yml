@@ -22,6 +22,9 @@ services:
       dockerfile: Dockerfile.watchdog
     volumes:
       - ./avalanche:/avalanche
+      - /var/run/docker.sock:/var/run/docker.sock
+    env_file:
+      - .env
 
 networks:
   default:
