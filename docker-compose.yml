@@ -26,6 +26,14 @@ services:
     env_file:
       - .env
 
+  proxy:
+    image: caddy:latest
+    ports:
+      - "443:443"
+      - "80:80"
+    volumes:
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile
+
 networks:
   default:
     driver: bridge
