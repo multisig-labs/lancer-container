@@ -10,6 +10,7 @@ type Config = {
   "track-subnets": string;
   "public-ip": string;
   "http-host": string;
+  "http-allowed-hosts": string;
 }
 
 if (!supabaseUrl || !serviceKey) {
@@ -42,6 +43,7 @@ const onChange = async (_: any) => {
     console.log('Existing config:', existingConfig);
     config['public-ip'] = existingConfig['public-ip'];
     config['http-host'] = existingConfig['http-host'];
+    config['http-allowed-hosts'] = existingConfig['http-allowed-hosts'];
     console.log('New config:', config);
   } catch (e) {
     // ignore the error if the file does not exist

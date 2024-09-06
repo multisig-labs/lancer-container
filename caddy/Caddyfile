@@ -1,0 +1,3 @@
+node.l1marketplace.com {
+    reverse_proxy avalanche:9650 
+}

@@ -9,13 +9,12 @@ services:
       args:
         AVALANCHE_VERSION: latest # Update with the appropriate version
     ports:
-      - "127.0.0.1:9650:9650"
+      - "9650:9650"
       - "9651:9651"
     volumes:
       - ./avalanche:/avalanche
     command: /avalanchego/build/avalanchego --data-dir=/avalanche --network-id=fuji --config-file=/avalanche/configs/node.json
-
-  # Service for the watchdog
+    # Service for the watchdog
   watchdog:
     build:
       context: .
@@ -25,7 +24,6 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     env_file:
       - .env
-
   proxy:
     image: caddy:latest
     ports:
@@ -33,7 +31,7 @@ services:
       - "80:80"
     volumes:
       - ./caddy/Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
 
-networks:
-  default:
-    driver: bridge
+volumes:
+  caddy_data:
