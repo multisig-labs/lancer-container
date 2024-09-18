@@ -20,7 +20,7 @@ if (!supabaseUrl || !serviceKey) {
 const supabase = createClient<Database>(supabaseUrl, serviceKey);
 
 const getAllSubnets = async () => {
-  const { data, error } = await supabase.from('subnets').select('*');
+  const { data, error } = await supabase.from('blockchains_lancer').select('*');
   if (error) {
     throw error;
   }
@@ -31,15 +31,14 @@ const getAllSubnets = async () => {
 const onChange = async (_: any) => {
   console.log('Subnet inserted or deleted');
   const subnets = await getAllSubnets();
+  const uniqueSubnets = Array.from(new Set(subnets.map((subnet) => subnet.subnet_id)));
   const config = {
-    'track-subnets': subnets.map((subnet) => subnet.subnet_id).join(',')
+    'track-subnets': uniqueSubnets.join(',')
   } as Config;
 
   // read the existing config and include all existing attributes
   try {
-    const decoder = new TextDecoder('utf-8');
-    const data = await Deno.readFile('/avalanche/configs/node.json');
-    const existingConfig: Config = JSON.parse(decoder.decode(data));
+    const existingConfig: Config = JSON.parse(await Deno.readTextFile('/avalanche/configs/node.json'));
     console.log('Existing config:', existingConfig);
     config['public-ip'] = existingConfig['public-ip'];
     config['http-host'] = existingConfig['http-host'];
@@ -51,8 +50,7 @@ const onChange = async (_: any) => {
   }
 
   // overwrite the config at avalanche/config.json
-  const encoder = new TextEncoder();
-  await Deno.writeFile('/avalanche/configs/node.json', encoder.encode(JSON.stringify(config)));
+  await Deno.writeTextFile('/avalanche/configs/node.json', JSON.stringify(config));
   // make sure all the subnet VMs are in the plugins folder
   // if they are not, copy subnet-evm to their respective VM ID
   const vmIDs = subnets.map((subnet) => subnet.vm_id);
@@ -91,12 +89,12 @@ const changes = supabase
   .on('postgres_changes', {
     event: 'INSERT',
     schema: 'public',
-    table: 'subnets',
+    table: 'blockchains_lancer',
   }, onChange)
   .on('postgres_changes', {
     event: 'DELETE',
     schema: 'public',
-    table: 'subnets',
+    table: 'blockchains_lancer',
   }, onChange);
 
 changes.subscribe((status) => {
@@ -114,6 +112,9 @@ const handleSignal = () => {
 // Add signal listeners for SIGINT and SIGTERM
 Deno.addSignalListener("SIGINT", handleSignal);
 Deno.addSignalListener("SIGTERM", handleSignal);
+
+// run the onChange function once to get the initial subnets
+await onChange(null);
 
 console.log("Press Ctrl+C to exit");
 
