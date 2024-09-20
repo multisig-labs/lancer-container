@@ -24,6 +24,16 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     env_file:
       - .env
+
+  health:
+    build:
+      context: .
+      dockerfile: Dockerfile.health
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports: 
+      - "8000:8000"
+  
   proxy:
     image: caddy:latest
     ports:

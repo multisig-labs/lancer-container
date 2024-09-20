@@ -1,0 +1,14 @@
+# Stage 1: Build the Deno application
+FROM denoland/deno:alpine
+
+# Set the working directory to /app
+WORKDIR /app
+
+# Copy the Deno program to the container
+COPY health /app/health
+
+# cache the dependencies
+RUN deno cache /app/health/main.ts
+
+# run the watchdog
+CMD ["deno", "run", "--allow-net", "--allow-read", "--allow-env", "--allow-write", "/app/health/main.ts"]

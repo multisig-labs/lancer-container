@@ -1,3 +1,11 @@
 node.l1marketplace.com {
     reverse_proxy avalanche:9650 
 }
+
+node.l1launcher.com {
+    reverse_proxy avalanche:9650 
+}
+
+health.l1launcher.com {
+    reverse_proxy health:8000
+}
