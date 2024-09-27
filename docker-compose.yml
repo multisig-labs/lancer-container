@@ -1,20 +1,51 @@
 name: "lancer-server"
 
 services:
-  # Service for the first Dockerfile
+  # Original Avalanche Service
   avalanche:
     build:
       context: subnet-evm
       dockerfile: ../Dockerfile
       args:
-        AVALANCHE_VERSION: latest # Update with the appropriate version
+        AVALANCHE_VERSION: latest  # Update with the appropriate version
     ports:
-      - "9650:9650"
-      - "9651:9651"
+      - "173.249.4.90:9650:9650"  # Bind container port 9650 to host IP 173.249.4.90
+      - "173.249.4.90:9651:9651"  # Bind container port 9651 to host IP 173.249.4.90
     volumes:
       - ./avalanche:/avalanche
-    command: /avalanchego/build/avalanchego --data-dir=/avalanche --network-id=fuji --config-file=/avalanche/configs/node.json
-    # Service for the watchdog
+    command: >
+      /avalanchego/build/avalanchego
+      --data-dir=/avalanche
+      --network-id=fuji
+      --config-file=/avalanche/configs/node.json
+    restart: unless-stopped
+    networks:
+      avalanche_net:
+        ipv4_address: 173.249.4.90
+
+  # New Bvalanche Service
+  bvalanche:
+    build:
+      context: subnet-evm
+      dockerfile: ../Dockerfile
+      args:
+        AVALANCHE_VERSION: latest  # Update with the appropriate version
+    ports:
+      - "173.212.245.59:9650:9650"  # Bind container port 9650 to host IP 173.212.245.59
+      - "173.212.245.59:9651:9651"  # Bind container port 9651 to host IP 173.212.245.59
+    volumes:
+      - ./bvalanche:/avalanche
+    command: >
+      /avalanchego/build/avalanchego
+      --data-dir=/avalanche
+      --network-id=fuji
+      --config-file=/avalanche/configs/node.json
+    restart: unless-stopped
+    networks:
+      bvalanche_net:
+        ipv4_address: 173.212.245.59
+
+  # Service for the Watchdog
   watchdog:
     build:
       context: .
@@ -24,7 +55,9 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     env_file:
       - .env
+    restart: unless-stopped
 
+  # Service for Health Checks
   health:
     build:
       context: .
@@ -33,7 +66,9 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     ports: 
       - "8000:8000"
-  
+    restart: unless-stopped
+
+  # Proxy Service
   proxy:
     image: caddy:latest
     ports:
@@ -42,6 +77,16 @@ services:
     volumes:
       - ./caddy/Caddyfile:/etc/caddy/Caddyfile
       - caddy_data:/data
+    restart: unless-stopped
+
 
 volumes:
   caddy_data:
+
+networks:
+  avalanche_net:
+    external: true
+  bvalanche_net:
+    external: true
+  bridge:
+    external: true
