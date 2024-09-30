@@ -9,8 +9,8 @@ services:
       args:
         AVALANCHE_VERSION: latest  # Update with the appropriate version
     ports:
-      - "173.249.4.90:9650:9650"  # Bind container port 9650 to host IP 173.249.4.90
-      - "173.249.4.90:9651:9651"  # Bind container port 9651 to host IP 173.249.4.90
+      - "9650:9650"  # Bind container port 9650 to host IP 173.249.4.90
+      - "9671:9671"  # Bind container port 9671 to host IP 173.249.4.90
     volumes:
       - ./avalanche:/avalanche
     command: >
@@ -18,10 +18,8 @@ services:
       --data-dir=/avalanche
       --network-id=fuji
       --config-file=/avalanche/configs/node.json
+      --staking-port=9671
     restart: unless-stopped
-    networks:
-      avalanche_net:
-        ipv4_address: 173.249.4.90
 
   # New Bvalanche Service
   bvalanche:
@@ -31,8 +29,8 @@ services:
       args:
         AVALANCHE_VERSION: latest  # Update with the appropriate version
     ports:
-      - "173.212.245.59:9650:9650"  # Bind container port 9650 to host IP 173.212.245.59
-      - "173.212.245.59:9651:9651"  # Bind container port 9651 to host IP 173.212.245.59
+      - "9652:9650"  # Bind container port 9650 to host IP 173.212.245.59
+      - "9651:9651"  # Bind container port 9651 to host IP 173.212.245.59
     volumes:
       - ./bvalanche:/avalanche
     command: >
@@ -41,9 +39,6 @@ services:
       --network-id=fuji
       --config-file=/avalanche/configs/node.json
     restart: unless-stopped
-    networks:
-      bvalanche_net:
-        ipv4_address: 173.212.245.59
 
   # Service for the Watchdog
   watchdog:
@@ -82,11 +77,3 @@ services:
 
 volumes:
   caddy_data:
-
-networks:
-  avalanche_net:
-    external: true
-  bvalanche_net:
-    external: true
-  bridge:
-    external: true
