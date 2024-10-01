@@ -40,7 +40,8 @@ const supabase = createClient<Database>(supabaseUrl, serviceKey);
  * @returns Promise resolving to an array of Subnet objects.
  */
 const getAllSubnets = async (): Promise<Subnet[]> => {
-  const { data, error } = await supabase.from("blockchains_lancer").select("*");
+  // temporary fix for the issue we're having. Only ever get the 17 newest until we fix the issue.
+  const { data, error } = await supabase.from("blockchains_lancer").select("*").order('id', { ascending: false }).limit(17);
   if (error) {
     console.error("Error fetching subnets:", error);
     return [];
@@ -128,7 +129,7 @@ const onChange = async (subnets: Subnet[]) => {
   let containers: Docker.ContainerInfo[];
   try {
     containers = await docker.containers.list();
-    console.log("Containers:", containers);
+    // console.log("Containers:", containers);
   } catch (e) {
     console.error("Error listing Docker containers:", e);
     return;
@@ -198,6 +199,7 @@ const main = async () => {
   const initialSubnets = await getAllSubnets();
   previousSubnetIDs = new Set(initialSubnets.map((subnet) => subnet.subnet_id));
 
+  console.log("Starting with", initialSubnets.length, "subnets.");
   // Run the initial onChange to set up the environment
   await onChange(initialSubnets);
 
