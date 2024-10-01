@@ -41,7 +41,7 @@ const supabase = createClient<Database>(supabaseUrl, serviceKey);
  */
 const getAllSubnets = async (): Promise<Subnet[]> => {
   // temporary fix for the issue we're having. Only ever get the 17 newest until we fix the issue.
-  const { data, error } = await supabase.from("blockchains_lancer").select("*").order('id', { ascending: false }).limit(17);
+  const { data, error } = await supabase.from("blockchains_lancer").select("*").order('id', { ascending: false });
   if (error) {
     console.error("Error fetching subnets:", error);
     return [];
