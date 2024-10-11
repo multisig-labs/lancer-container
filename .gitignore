@@ -4,3 +4,4 @@ api/test.db
 **.DS_Store**
 avalanche
 bvalanche
+*.txt
