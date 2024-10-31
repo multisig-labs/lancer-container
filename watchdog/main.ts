@@ -5,6 +5,8 @@ import Docker from "https://deno.land/x/docker_deno@v0.3.3/mod.ts";
 const supabaseUrl = Deno.env.get("SUPABASE_URL");
 const serviceKey = Deno.env.get("SUPABASE_SERVICE_KEY");
 
+const network = Deno.env.get("NETWORK") || "fuji";
+
 // Path Constants
 const CONFIG_PATH = "/avalanche/configs/node.json";
 const PLUGINS_DIR = "/avalanche/plugins";
@@ -40,8 +42,7 @@ const supabase = createClient<Database>(supabaseUrl, serviceKey);
  * @returns Promise resolving to an array of Subnet objects.
  */
 const getAllSubnets = async (): Promise<Subnet[]> => {
-  // temporary fix for the issue we're having. Only ever get the 17 newest until we fix the issue.
-  const { data, error } = await supabase.from("blockchains_lancer").select("*").order('id', { ascending: false }).limit(17);
+  const { data, error } = await supabase.from("blockchains_lancer").select("*").order('id', { ascending: false }).eq('network', network);
   if (error) {
     console.error("Error fetching subnets:", error);
     return [];

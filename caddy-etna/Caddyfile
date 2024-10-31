@@ -1,0 +1,38 @@
+# Route for l1marketplace API
+# node.l1marketplace.com {
+#     reverse_proxy avalanche:9650 bvalanche:9650 {
+#         # Load balancing policy
+#         lb_policy round_robin  # Distribute requests evenly
+
+#         # Health check configuration
+#         health_path /ext/health
+#         health_interval 1s      # Time between each health check
+#         health_timeout 2s        # Timeout for each health check request
+#         health_status 200        # Expected successful status code
+#     }
+# }
+
+# # Route for l1launcher API
+# node.l1launcher.com {
+#     reverse_proxy bvalanche:9650 avalanche:9650 {
+#         lb_policy round_robin
+
+#         health_path /ext/health
+#         health_interval 1s
+#         health_timeout 2s
+#         health_status 200
+#     }
+# }
+
+# just proxy the two to avalanche:9650 for now
+devnet.l1marketplace.com {
+    reverse_proxy avalanche:9650
+}
+
+devnet.l1launcher.com {
+    reverse_proxy avalanche:9650
+}
+
+health-devnet.l1launcher.com {
+    reverse_proxy health:8000
+}
