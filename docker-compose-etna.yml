@@ -39,15 +39,15 @@ services:
     restart: unless-stopped
 
   # Service for Health Checks
-  # health:
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile.health
-  #   volumes:
-  #     - /var/run/docker.sock:/var/run/docker.sock
-  #   ports:
-  #     - "8000:8000"
-  #   restart: unless-stopped
+  health:
+    build:
+      context: .
+      dockerfile: Dockerfile.health
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
 
   # Proxy Service
   proxy:
