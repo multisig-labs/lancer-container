@@ -17,7 +17,7 @@ services:
       --config-file=/avalanche/configs/node.json
       --staking-port=9651
       --log-level=info
-      --partial-sync-primary-network-string
+      --partial-sync-primary-network
       --network-id="network-76"
       --bootstrap-ids="NodeID-8LbTmmGsDC991SbD8Nkx88VULT3XYzYXC,NodeID-bojBKDrpt81bYhxYKQfLw89V7CpoH2m7,NodeID-WrLWMK5sJ4dBUAsx1dP2FUyTqrYwbFA1,NodeID-DDhXtFm6Q9tCq2yiFRmcSMKvHgUgh8yQC,NodeID-QDYnWDQd6g4cQ5H6yiWNqSmfRMBqEH9AG"
       --bootstrap-ips="52.201.126.172:9651,34.233.248.130:9651,107.21.11.213:9651,35.170.144.5:9651,98.82.41.186:9651"
