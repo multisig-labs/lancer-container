@@ -7,6 +7,10 @@ const serviceKey = Deno.env.get("SUPABASE_SERVICE_KEY");
 
 const network = Deno.env.get("NETWORK") || "fuji";
 
+const DELAY = Deno.env.get("DELAY") || "0";
+
+const delay = DELAY === "1" ? 0 : parseInt(DELAY) * 1000 * 60;
+
 // Path Constants
 const CONFIG_PATH = "/avalanche/configs/node.json";
 const PLUGINS_DIR = "/avalanche/plugins";
@@ -16,6 +20,8 @@ const SUBNET_EVM_SOURCE = "/avalanche/vms/subnet-evm";
 const DOCKER_SOCKET_PATH = "/var/run/docker.sock";
 
 const docker = new Docker(DOCKER_SOCKET_PATH);
+
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 type Config = {
   "track-subnets": string;
@@ -82,6 +88,11 @@ const onChange = async (subnets: Subnet[]) => {
     console.error("Error reading existing config:", e);
   }
 
+  if (delay > 0) {
+    console.log("Waiting for", delay, "ms before updating configuration...");
+    await sleep(delay);
+  }
+
   // Overwrite the config at CONFIG_PATH
   try {
     await Deno.writeTextFile(CONFIG_PATH, JSON.stringify(config, null, 2));
@@ -92,7 +103,7 @@ const onChange = async (subnets: Subnet[]) => {
   }
 
   // Ensure all the subnet VMs are in the plugins folder
-  const vmIDs = subnets.map((subnet) => subnet.vm_id);
+  const vmIDs = Array.from(new Set(subnets.map((subnet) => subnet.vm_id)));
   let files: Deno.DirEntry[] = [];
   try {
     files = Array.from(Deno.readDirSync(PLUGINS_DIR));
