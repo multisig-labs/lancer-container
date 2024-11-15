@@ -49,16 +49,5 @@ services:
       - "8000:8000"
     restart: unless-stopped
 
-  # Proxy Service
-  proxy:
-    image: caddy:latest
-    ports:
-      - "443:443"
-      - "80:80"
-    volumes:
-      - ./caddy-etna/Caddyfile:/etc/caddy/Caddyfile
-      - caddy_data:/data
-    restart: unless-stopped
-
 volumes:
   caddy_data:
