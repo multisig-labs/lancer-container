@@ -25,14 +25,18 @@
 # }
 
 # just proxy the two to avalanche:9650 for now
-# node.l1marketplace.com {
-#     reverse_proxy avalanche:9650
-# }
-
-test-node.l1launcher.com {
+node.l1marketplace.com {
     reverse_proxy avalanche:9650
 }
 
-test-health.l1launcher.com {
-    reverse_proxy health:8000
+node.l1launcher.com {
+    reverse_proxy avalanche:9650
 }
+
+# test-node.l1launcher.com {
+#     reverse_proxy avalanche:9650
+# }
+
+# test-health.l1launcher.com {
+#     reverse_proxy health:8000
+# }

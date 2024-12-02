@@ -3,11 +3,7 @@ name: "lancer-server"
 services:
   # Original Avalanche Service
   avalanche:
-    build:
-      context: subnet-evm
-      dockerfile: ../Dockerfile
-      args:
-        AVALANCHE_VERSION: latest  # Update with the appropriate version
+    image: chand1012/avalanchego:multinode-hack
     ports:
       - "9650:9650" 
       - "9671:9671"
@@ -19,28 +15,6 @@ services:
       --network-id=fuji
       --config-file=/avalanche/configs/node.json
       --staking-port=9671
-      --log-level=info
-    restart: unless-stopped
-    env_file:
-      - .env
-
-  # New Bvalanche Service
-  bvalanche:
-    build:
-      context: subnet-evm
-      dockerfile: ../Dockerfile
-      args:
-        AVALANCHE_VERSION: latest  # Update with the appropriate version
-    ports:
-      - "9652:9650"
-      - "9651:9651"
-    volumes:
-      - ./bvalanche:/avalanche
-    command: >
-      /avalanchego/build/avalanchego
-      --data-dir=/avalanche
-      --network-id=fuji
-      --config-file=/avalanche/configs/node.json
       --log-level=info
     restart: unless-stopped
     env_file:
