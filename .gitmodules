@@ -1,3 +1,8 @@
 [submodule "subnet-evm"]
 	path = subnet-evm
-	url = https://github.com/ava-labs/subnet-evm.git
+	url = https://github.com/multisig-labs/subnet-evm.git
+	branch = remove-keystore
+[submodule "avalanchego"]
+	path = avalanchego
+	url = https://github.com/multisig-labs/avalanchego.git
+	branch = multinode-hack
