@@ -5,7 +5,7 @@
 ARG AVALANCHE_VERSION
 
 # ============= Compilation Stage ================
-FROM golang:1.21.12-bullseye AS builder
+FROM golang:1.23.6-bullseye AS builder
 
 WORKDIR /build
 
@@ -29,7 +29,7 @@ ARG CURRENT_BRANCH
 RUN export SUBNET_EVM_COMMIT=$SUBNET_EVM_COMMIT && export CURRENT_BRANCH=$CURRENT_BRANCH && ./scripts/build.sh /build/subnet-evm
 
 # ============= Cleanup Stage ================
-FROM avaplatform/avalanchego:$AVALANCHE_VERSION AS builtImage
+FROM multisig-labs/avalanchego:latest AS builtImage
 
 # Copy the evm binary into the correct location in the container
 COPY --from=builder /build/subnet-evm /avalanchego/build/plugins/srEXiWaHuhNyGwPUi444Tu47ZEDwxTWrbQiuD7FmgSAQ6X7Dy

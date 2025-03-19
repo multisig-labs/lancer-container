@@ -1,0 +1,46 @@
+# The version is supplied as a build argument rather than hard-coded
+# to minimize the cost of version changes.
+ARG GO_VERSION
+
+# ============= Compilation Stage ================
+# Always use the native platform to ensure fast builds
+FROM golang:$GO_VERSION-bullseye AS builder
+
+# Install build dependencies
+RUN apt-get update && \
+  apt-get install -y build-essential && \
+  rm -rf /var/lib/apt/lists/*
+
+WORKDIR /build
+
+# Copy and download dependencies
+COPY go.mod .
+COPY go.sum .
+RUN go mod download
+
+# Copy the code into the container
+COPY . .
+
+# Clean any pre-existing builds
+RUN [ -d ./build ] && rm -rf ./build/* || true
+
+# Set build environment variables
+ENV CGO_ENABLED=1 \
+  CGO_CFLAGS="-O2 -D__BLST_PORTABLE__" \
+  GOPROXY="https://proxy.golang.org"
+
+# Build avalanchego directly
+RUN mkdir -p build && \
+  go build -o build/avalanchego \
+  -ldflags "-X github.com/ava-labs/avalanchego/version.GitCommit=" \
+  ./main/main.go
+
+# ============= Cleanup Stage ================
+FROM debian:11-slim
+
+WORKDIR /avalanchego/build
+
+# Copy the executable into the container
+COPY --from=builder /build/build/avalanchego .
+
+CMD [ "./avalanchego" ]
