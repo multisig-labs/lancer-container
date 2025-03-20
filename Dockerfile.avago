@@ -1,10 +1,6 @@
-# The version is supplied as a build argument rather than hard-coded
-# to minimize the cost of version changes.
-ARG GO_VERSION
-
 # ============= Compilation Stage ================
 # Always use the native platform to ensure fast builds
-FROM golang:$GO_VERSION-bullseye AS builder
+FROM golang:1.23.6-bullseye AS builder
 
 # Install build dependencies
 RUN apt-get update && \

@@ -5,4 +5,4 @@
 [submodule "avalanchego"]
 	path = avalanchego
 	url = https://github.com/multisig-labs/avalanchego.git
-	branch = multinode-hack
+	branch = multinode-hack-1.13

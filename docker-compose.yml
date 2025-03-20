@@ -18,7 +18,7 @@ services:
       --data-dir=/avalanche
       --network-id=fuji
       --config-file=/avalanche/configs/node.json
-      --staking-port=9671
+      --staking-port=9651
       --log-level=info
     restart: unless-stopped
 
