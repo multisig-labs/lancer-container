@@ -32,9 +32,12 @@ RUN mkdir -p build && \
   ./main/main.go
 
 # ============= Cleanup Stage ================
-FROM debian:11-slim
+FROM debian:12-slim
 
 WORKDIR /avalanchego/build
+
+# Install required GLIBC version
+RUN apt-get update && apt-get install -y libc6 && rm -rf /var/lib/apt/lists/*
 
 # Copy the executable into the container
 COPY --from=builder /build/build/avalanchego .

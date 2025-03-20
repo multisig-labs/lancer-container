@@ -31,8 +31,5 @@ RUN export SUBNET_EVM_COMMIT=$SUBNET_EVM_COMMIT && export CURRENT_BRANCH=$CURREN
 # ============= Cleanup Stage ================
 FROM multisig-labs/avalanchego:latest AS builtImage
 
-# glibc 2.36
-RUN apt-get update && apt-get install -y libc6
-
 # Copy the evm binary into the correct location in the container
 COPY --from=builder /build/subnet-evm /avalanchego/build/plugins/srEXiWaHuhNyGwPUi444Tu47ZEDwxTWrbQiuD7FmgSAQ6X7Dy
